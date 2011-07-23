@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+
+##
+# bin/cpucat: 主程序，用作安装后的执行脚本。
+# This file is part of CPUcat.
+# Copyright (C) 2011  CUI Hao
+# Under GPL v3
+##
+
+from cpucat.mainwindow import main
+main()
+

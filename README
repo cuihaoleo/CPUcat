@@ -1,0 +1,20 @@
+CPUcat
+by CUI Hao <cuihao.leo@gmail.com>
+
+[Chinese Simp. / 简体中文]
+CPUcat是用Python编写的查看CPU和其他硬件信息的GUI工具，类似Windows下CPU-Z，GUI基于PyQt4库。
+
+1. 系统要求
+    > Linux内核（2.6或更新）
+    > Python 2、3皆可
+    > 针对Python版本的PyQt4库
+    > （可选）dmidecode程序
+    > 以上程序的依赖
+
+2. 安装（可选）
+    python setup.py install
+
+3. 使用说明
+    某些信息需要使用root账户获取。
+
+
