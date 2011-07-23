@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#! -*- coding: utf-8 -*-
 
 ##
 # CPUcat.py: 主程序，用于直接使用。
