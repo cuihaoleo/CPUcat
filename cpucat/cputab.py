@@ -42,6 +42,7 @@ def whichlogo (cpu):
         return os.path.join(basepath, "logos", "amd.png")
     if cpu.isIntel():
         return os.path.join(basepath, "logos", "intel.png")
+    return ""
 
 class NEBox (QLineEdit):
     def __init__ (self, parent=None):
