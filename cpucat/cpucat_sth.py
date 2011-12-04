@@ -39,3 +39,31 @@ else:
     gettext.textdomain(PACKAGE)
     translate = gettext.gettext
 
+_ = translate
+import sys
+
+def depcheck ():
+    try:
+        import PyQt4
+    except ImportError:
+        sys.stderr.write(_("Please install PyQt4 first.\n"))
+        exit(1)
+
+    try:
+        import dmidecode
+    except ImportError:
+        sys.stderr.write(_("Python module 'dmidecode' not found. "\
+                           "Some infomation may be ignored.\n"))
+
+    def check_lscpu ():
+        import os
+        for p in os.environ["PATH"].split(os.pathsep):
+            fpath = os.path.join(p, "lscpu")
+            if os.path.exists(fpath) and os.access(fpath, os.X_OK):
+                return True
+        return False
+
+    if not check_lscpu():
+        sys.stderr.write(_("The 'lscpu' command not found. "\
+                           "Some infomation may be ignored.\n"))
+

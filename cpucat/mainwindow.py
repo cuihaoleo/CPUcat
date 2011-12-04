@@ -26,18 +26,17 @@
 # Email: cuihao.leo@gmail.com
 ##
 
-from cpucat.cpucat_sth import translate as _
-from cpucat.cpucat_sth import FRIENDLYNAME, VERSION
-
-try:
-    from PyQt4.QtGui import *
-    from PyQt4.QtCore import SIGNAL, SLOT
-except ImportError:
-    print(_("Please install PyQt4 first."))
-    exit(1)
-
 import sys
 import os
+
+from cpucat.cpucat_sth import translate as _
+from cpucat.cpucat_sth import FRIENDLYNAME, VERSION
+from cpucat.cpucat_sth import depcheck
+depcheck()
+
+from PyQt4.QtGui import *
+from PyQt4.QtCore import SIGNAL, SLOT
+
 from cpucat.cputab import CPUTab
 from cpucat.motherboardtab import MotherboardTab
 from cpucat.memorytab import MemoryTab

@@ -29,6 +29,7 @@
 import sys
 import glob
 import re
+import os
 try:
     from subprocess import getstatusoutput
 except ImportError:
@@ -50,7 +51,7 @@ def friendly_print (num, unit=""):
 
     if num < 8192:
         return "%d Bytes" % num
-    elif num < 8192*1024:
+    elif num < 8192*1024: 
         return "%.2f KB" % (num/1024)
     elif num < 8192*1024*1024:
         return "%.2f MB" % (num/1024/1024)
@@ -59,27 +60,30 @@ def friendly_print (num, unit=""):
 
 class memoryinfo:
     def __init__ (self):
-        ret, output = getstatusoutput("dmidecode -t memory")
-        if ret:
+        if os.getuid():
             return
-
-        infos = re.split("\n\n", output)
-        ge = infos[1]
-        sp = infos[2:]
-
-        self._MaxCapacity = re.findall("Maximum Capacity: (.*)", ge)[0]
-        self._NumOfDev = int(re.findall("Number Of Devices: (.*)", ge)[0])
+        try:
+            import dmidecode
+        except ImportError:
+            return
+    
         self._Slot = []
-
-        for item in sp:
-            info = {}
-            info["Size"] = re.findall("Size: (.*)", item)[0]
-            info["Type"] = "%s (%s)" % (re.findall("Type: (.*)", item)[0],
-                                re.findall("Type Detail: (.*)", item)[0])
-            info["Clock"] = re.findall("Speed: (.*)", item)[0]
-            info["Width"] = (re.findall("Total Width: (.*)", item)[0],
-                                re.findall("Data Width: (.*)", item)[0])
-            self._Slot.append(info)
+        for item in dmidecode.memory().values():
+            if item['dmi_type'] == 17:
+                info = {}
+                info["Size"] = item['data']['Size'] if item['data']['Size'] else '0'
+                info["Type"] = "%s" % item['data']['Type']
+                info["Clock"] = item['data']['Speed']
+                info["Width"] = (item['data']['Total Width'], item['data']['Data Width'])
+                try:
+                    info["Type"] += " (%s)" % ' '.join(
+                                    s for s in item['data']['Type Detail'] if s)
+                except TypeError:
+                    pass
+                self._Slot.append(info)
+            elif item['dmi_type'] == 16:
+                self._MaxCapacity = item['data']['Maximum Capacity']
+                self._NumOfDev = item['data']['Number Of Devices']
 
     def getMaxCapacity (self):
         try:

@@ -151,26 +151,34 @@ class cpuinfo_plus (cpuinfo):
 
         self._OpMode = re.findall(r"CPU op-mode\(s\):[\s]*(.*)",
                                 output)[0].split(",")
-        self._BogoMIPS = float(re.findall(r"BogoMIPS:[\s]*([\S]*)",
-                                output)[0])
+        try:
+            self._BogoMIPS = float(re.findall(r"BogoMIPS:[\s]*([\S]*)",
+                                    output)[0])
+        except:
+            self._BogoMIPS = float(re.findall(r"bogomips[\D]*([\S]*)",
+                                    open("/proc/cpuinfo").read())[0])
 
     def _getinfo_from_dmidecode (self):
-        if os.getuid(): return
+        if os.getuid():
+            return
+        try:
+            import dmidecode
+        except ImportError:
+            return
 
-        ret, output = getstatusoutput("dmidecode -t processor")
-        if ret: return
+        try:
+            data = dmidecode.processor().values()[0]['data']
+        except IndexError:
+            return
 
-        extclock = re.findall(r"External Clock: (.*)", output)[0]
-        currspeed = re.findall(r"Current Speed: (.*)", output)[0]
-
+        extclock = data['External Clock']
+        currspeed = data['Current Speed']
         self._Speed = {
-                "ExternalClock": extclock,
-                "SpeedBIOS": currspeed,
-                "Multiplier": "x%.1f" % \
-                                (int(currspeed.split()[0])/
-                                 int(extclock.split()[0]))
+                "ExternalClock": "%s MHz" % extclock,
+                "SpeedBIOS": "%s MHz" % currspeed,
+                "Multiplier": "x%.1f" % (currspeed/extclock)
             }
-        self._Slot = re.findall(r"Socket Designation: (.*)", output)[0]
+        self._Slot = data['Socket Designation']
 
     def getCurrentSpeed (self):
         text = open("/proc/cpuinfo"). \
